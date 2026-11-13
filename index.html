@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#C8102E">
+<meta name="color-scheme" content="light">
+<title>Holiday Family Feud</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%84%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Falling snow on both sides of the screen -->
+<div class="snow snow-left" id="snowL" aria-hidden="true"></div>
+<div class="snow snow-right" id="snowR" aria-hidden="true"></div>
+
+<!-- Welcome screen -->
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="lights" aria-hidden="true"></div>
+  <div class="snowfull" id="introSnow" aria-hidden="true"></div>
+  <div class="intro-art" id="introArt" aria-hidden="true"></div>
+  <h1 id="introTitle">Holiday Family Feud</h1>
+  <p class="intro-sub">Christmas Party Edition</p>
+  <div class="intro-btns">
+    <button class="btn red big" id="introGo">Start the game</button>
+    <button class="btn big" id="introSetup">Set up questions</button>
+  </div>
+</div>
+
+<header class="mast">
+  <div class="lights" id="lights" aria-hidden="true"></div>
+  <div class="mast-row">
+
+    <!-- Winking reindeer -->
+    <div class="deer" aria-hidden="true">
+      <svg viewBox="0 0 160 170" xmlns="http://www.w3.org/2000/svg">
+        <g class="deer-bob">
+          <g fill="none" stroke="#8A5A2B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M56 54 C48 38 44 26 36 12 M48 36 C40 34 32 32 26 24 M43 24 C38 24 33 22 30 16"/>
+            <path d="M104 54 C112 38 116 26 124 12 M112 36 C120 34 128 32 134 24 M117 24 C122 24 127 22 130 16"/>
+          </g>
+          <g class="ear-l">
+            <ellipse cx="38" cy="76" rx="16" ry="9" transform="rotate(-25 38 76)" fill="#B97A44"/>
+            <ellipse cx="39" cy="76" rx="9" ry="4.5" transform="rotate(-25 39 76)" fill="#F4B8B0"/>
+          </g>
+          <g>
+            <ellipse cx="122" cy="76" rx="16" ry="9" transform="rotate(25 122 76)" fill="#B97A44"/>
+            <ellipse cx="121" cy="76" rx="9" ry="4.5" transform="rotate(25 121 76)" fill="#F4B8B0"/>
+          </g>
+          <ellipse cx="80" cy="98" rx="44" ry="42" fill="#B97A44"/>
+          <ellipse cx="80" cy="124" rx="27" ry="21" fill="#F3D7B0"/>
+          <circle cx="50" cy="112" r="7" fill="#F28B82" opacity=".45"/>
+          <circle cx="110" cy="112" r="7" fill="#F28B82" opacity=".45"/>
+          <circle cx="62" cy="94" r="6.5" fill="#2B1B17"/>
+          <circle cx="64" cy="92" r="2" fill="#fff"/>
+          <g class="eye-open-r">
+            <circle cx="98" cy="94" r="6.5" fill="#2B1B17"/>
+            <circle cx="100" cy="92" r="2" fill="#fff"/>
+          </g>
+          <path class="eye-wink" d="M90 95 Q98 86 106 95" fill="none" stroke="#2B1B17" stroke-width="4" stroke-linecap="round"/>
+          <circle class="nose-halo" cx="80" cy="120" r="19" fill="#FF4D4D" opacity=".15"/>
+          <circle cx="80" cy="120" r="11" fill="#E5202E"/>
+          <circle cx="76" cy="116" r="3.5" fill="#fff" opacity=".7"/>
+          <path d="M80 131 L80 137 M68 136 Q80 147 92 136" fill="none" stroke="#2B1B17" stroke-width="3" stroke-linecap="round"/>
+          <g>
+            <ellipse cx="50" cy="66" rx="9" ry="4.5" transform="rotate(-30 50 66)" fill="#1F7A3D"/>
+            <ellipse cx="61" cy="64" rx="9" ry="4.5" transform="rotate(25 61 64)" fill="#2E9B4F"/>
+            <circle cx="55" cy="68" r="4" fill="#C8102E"/>
+            <circle cx="60" cy="70" r="3.2" fill="#C8102E"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+    <div class="mast-title">
+      <h1>Holiday Family Feud</h1>
+      <p class="sub">Christmas Party Edition</p>
+      <div class="tools">
+        <button class="btn" id="openEd">⚙️ Set up questions</button>
+        <button class="btn" id="openFm">⚡ Fast Money</button>
+        <button class="btn" id="fs">⛶ Full screen</button>
+        <button class="btn" id="mute" aria-pressed="false">🔊 Sound on</button>
+      </div>
+    </div>
+
+    <!-- Santa plugging in the Christmas tree lights -->
+    <div class="scene" aria-hidden="true">
+      <svg viewBox="0 0 300 230" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="150" cy="224" rx="142" ry="6" fill="#D5E6F3"/>
+
+        <!-- Tree -->
+        <g>
+          <rect x="248" y="196" width="14" height="18" fill="#7A4A22"/>
+          <polygon points="217,200 293,200 255,148" fill="#2E9B4F" stroke="#1B6B35" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="224,164 286,164 255,116" fill="#2E9B4F" stroke="#1B6B35" stroke-width="2" stroke-linejoin="round"/>
+          <polygon points="232,132 278,132 255,86" fill="#2E9B4F" stroke="#1B6B35" stroke-width="2" stroke-linejoin="round"/>
+          <polygon class="star" points="255,72 257.4,78.8 264.5,78.9 258.8,83.2 260.9,90.1 255,86 249.1,90.1 251.2,83.2 245.5,78.9 252.6,78.8" fill="#FFC933" stroke="#E39A0B" stroke-width="1.5" stroke-linejoin="round"/>
+          <g id="treeBulbs"></g>
+        </g>
+
+        <!-- Power strip -->
+        <g>
+          <rect x="128" y="203" width="74" height="13" rx="4" fill="#F1F4F7" stroke="#97A5B1" stroke-width="2"/>
+          <rect x="140" y="206" width="14" height="7" rx="2" fill="#3A4650"/>
+          <rect x="176" y="206" width="14" height="7" rx="2" fill="#3A4650"/>
+          <circle cx="196" cy="209.5" r="2" fill="#2E9B4F"/>
+        </g>
+
+        <!-- Cord from the tree to the plug -->
+        <path class="cord" d="M254 206 C 232 228 176 220 140 185" fill="none" stroke="#1F7A3D" stroke-width="3.5" stroke-linecap="round">
+          <animate attributeName="d" dur="7s" repeatCount="indefinite" calcMode="spline"
+            keyTimes="0;0.18;0.34;0.84;0.96;1"
+            keySplines="0 0 1 1;0.4 0 0.2 1;0 0 1 1;0.4 0 0.2 1;0 0 1 1"
+            values="M254 206 C 230 232 190 150 156 123;M254 206 C 230 232 190 150 156 123;M254 206 C 232 228 176 220 140 185;M254 206 C 232 228 176 220 140 185;M254 206 C 230 232 190 150 156 123;M254 206 C 230 232 190 150 156 123"/>
+        </path>
+
+        <!-- Santa -->
+        <g class="santa">
+          <ellipse cx="72" cy="222" rx="15" ry="7" fill="#2A2A2A"/>
+          <ellipse cx="108" cy="222" rx="15" ry="7" fill="#2A2A2A"/>
+          <path d="M52 216 C50 172 56 144 74 132 L108 132 C126 144 132 172 130 216 Z" fill="#D3202F" stroke="#A5121F" stroke-width="2" stroke-linejoin="round"/>
+          <rect x="87" y="132" width="8" height="84" fill="#fff"/>
+          <rect x="50" y="208" width="82" height="10" rx="5" fill="#fff" stroke="#DDE3E8" stroke-width="1.5"/>
+          <rect x="52" y="170" width="78" height="12" fill="#222"/>
+          <rect x="82" y="166" width="18" height="20" rx="3" fill="#FFC933" stroke="#C48A0E" stroke-width="2"/>
+          <rect x="86" y="172" width="10" height="8" rx="1.5" fill="#222"/>
+          <ellipse cx="55" cy="162" rx="9" ry="21" transform="rotate(8 55 162)" fill="#D3202F" stroke="#A5121F" stroke-width="2"/>
+          <circle cx="52" cy="184" r="7.5" fill="#2A2A2A"/>
+          <!-- head -->
+          <circle cx="91" cy="112" r="20" fill="#F8D2B0"/>
+          <circle cx="79" cy="112" r="4.5" fill="#F28B82" opacity=".5"/>
+          <circle cx="103" cy="112" r="4.5" fill="#F28B82" opacity=".5"/>
+          <circle cx="83" cy="106" r="2.6" fill="#2B1B17"/>
+          <circle cx="99" cy="106" r="2.6" fill="#2B1B17"/>
+          <circle cx="91" cy="113" r="4.2" fill="#F2A58E"/>
+          <path d="M72 114 Q72 148 91 154 Q110 148 110 114 Q100 126 91 124 Q82 126 72 114 Z" fill="#fff" stroke="#E1E6EA" stroke-width="1.5" stroke-linejoin="round"/>
+          <ellipse cx="84" cy="119" rx="8" ry="4.5" fill="#fff" stroke="#E1E6EA" stroke-width="1"/>
+          <ellipse cx="98" cy="119" rx="8" ry="4.5" fill="#fff" stroke="#E1E6EA" stroke-width="1"/>
+          <path d="M72 88 C72 64 84 52 102 50 C118 48 130 58 134 78 C124 68 116 72 114 88 Z" fill="#D3202F" stroke="#A5121F" stroke-width="2" stroke-linejoin="round"/>
+          <rect x="68" y="86" width="50" height="12" rx="6" fill="#fff" stroke="#DDE3E8" stroke-width="1.5"/>
+          <circle cx="134" cy="80" r="8" fill="#fff" stroke="#DDE3E8" stroke-width="1.5"/>
+        </g>
+
+        <!-- Arm that carries the plug -->
+        <g class="arm">
+          <rect x="112" y="139" width="40" height="15" rx="7.5" fill="#D3202F" stroke="#A5121F" stroke-width="2"/>
+          <rect x="146" y="137" width="10" height="19" rx="4" fill="#fff" stroke="#DDE3E8" stroke-width="1.5"/>
+          <circle cx="160" cy="146.5" r="7.5" fill="#2A2A2A"/>
+          <rect x="163" y="140" width="15" height="13" rx="3" fill="#F3F4F6" stroke="#8D98A3" stroke-width="1.5"/>
+          <rect x="178" y="142" width="7" height="3" fill="#8D98A3"/>
+          <rect x="178" y="148" width="7" height="3" fill="#8D98A3"/>
+        </g>
+
+        <!-- Spark when it plugs in -->
+        <g class="spark">
+          <path d="M153 191 L156 199 L164 201 L156 203 L153 211 L150 203 L142 201 L150 199Z" fill="#FFD23F"/>
+        </g>
+
+        <!-- Speech bubble -->
+        <g class="hoho">
+          <path d="M56 39 L64 54 L74 39" fill="#fff" stroke="#C8102E" stroke-width="2" stroke-linejoin="round"/>
+          <rect x="10" y="10" width="86" height="30" rx="15" fill="#fff" stroke="#C8102E" stroke-width="2"/>
+          <path d="M58 38 L72 38" stroke="#fff" stroke-width="3"/>
+          <text x="53" y="31" text-anchor="middle" font-family="Fredoka, Arial, sans-serif" font-size="15" font-weight="700" fill="#C8102E">Ho ho ho!</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="app">
+
+  <section class="scores" aria-label="Scores">
+    <div class="team t0" id="t0">
+      <div class="tinfo">
+        <div class="name" id="t0n"></div>
+        <div class="score" id="t0s">0</div>
+        <div class="ctl">🔔 In control</div>
+      </div>
+      <div class="adj">
+        <button data-adj="0,5" aria-label="Add 5 points to team 1">+</button>
+        <button data-adj="0,-5" aria-label="Subtract 5 points from team 1">−</button>
+      </div>
+    </div>
+
+    <div class="pot">
+      <div class="v" id="pot">0</div>
+      <div class="l">Round points <span class="mb" id="multBadge"></span></div>
+    </div>
+
+    <div class="team t1" id="t1">
+      <div class="tinfo">
+        <div class="name" id="t1n"></div>
+        <div class="score" id="t1s">0</div>
+        <div class="ctl">🔔 In control</div>
+      </div>
+      <div class="adj">
+        <button data-adj="1,5" aria-label="Add 5 points to team 2">+</button>
+        <button data-adj="1,-5" aria-label="Subtract 5 points from team 2">−</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="board" id="board">
+    <div class="qline">
+      <div>
+        <span class="qcat" id="qcat"></span>
+        <h2 class="question" id="question"></h2>
+      </div>
+      <div class="qnum" id="qnum"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="strikes" id="strikes" aria-live="polite"></div>
+    <div class="bigx" id="bigx" aria-hidden="true"></div>
+  </section>
+
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+
+  <section class="controls" aria-label="Game controls">
+    <div class="card">
+      <h3>Play the round</h3>
+      <div class="row">
+        <span class="lbl">Team in control</span>
+        <div class="seg" id="ctl">
+          <button data-c="0" id="c0"></button>
+          <button data-c="1" id="c1"></button>
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn strike" id="strikeBtn">✕ Strike</button>
+        <button class="btn" id="undoStrike">Undo strike</button>
+        <label class="mult">Points
+          <select id="mult">
+            <option value="1">Single</option>
+            <option value="2">Double</option>
+            <option value="3">Triple</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Award the round</h3>
+      <div class="row">
+        <button class="btn red" id="aw0"></button>
+        <button class="btn green" id="aw1"></button>
+      </div>
+      <p class="small">Reveal the guessed answers first, then give the round points to the winning team.</p>
+    </div>
+
+    <div class="card">
+      <h3>Questions</h3>
+      <div class="row">
+        <button class="btn" id="prev">← Previous</button>
+        <select id="jump" aria-label="Jump to a question"></select>
+        <button class="btn gold" id="next">Next question →</button>
+      </div>
+      <div class="row">
+        <button class="btn" id="revealAll">Show all answers</button>
+        <button class="btn" id="resetRound">Restart question</button>
+        <button class="btn green" id="finish">🏆 Finish game</button>
+      </div>
+      <p class="small" id="deckCount"></p>
+    </div>
+  </section>
+
+  <p class="keys">Shortcuts: <kbd>1</kbd>–<kbd>8</kbd> reveal an answer, <kbd>X</kbd> strike, <kbd>←</kbd> <kbd>→</kbd> change question, <kbd>F</kbd> full screen, <kbd>M</kbd> sound.</p>
+</main>
+
+<!-- Question editor -->
+<dialog id="ed" aria-labelledby="edTitle">
+  <div class="dlg-head">
+    <h2 id="edTitle">Set up questions</h2>
+    <button class="btn" id="closeEd">Done</button>
+  </div>
+  <div class="ed">
+    <aside>
+      <p class="hint" id="edCount"></p>
+      <p class="hint">Tick a question to put it in the game.</p>
+      <ul class="qlist" id="qlist"></ul>
+      <button class="btn" id="addQ" style="margin-top:10px;width:100%">+ Add your own question</button>
+    </aside>
+    <section>
+      <h3 class="h3">Edit question</h3>
+      <div class="field"><label for="edQ">Question</label><input id="edQ" type="text"></div>
+      <div class="field two">
+        <div><label for="edCat">Category</label><input id="edCat" type="text" list="cats"></div>
+        <label class="chk"><input id="edUse" type="checkbox"> Use in the game</label>
+      </div>
+      <datalist id="cats"></datalist>
+      <p class="hint">Enter the top answers from your survey tally and how many people gave each one. They sort by points on the board automatically. Blank rows are skipped.</p>
+      <div class="arows" id="arows"></div>
+      <details class="bulk">
+        <summary>Paste survey results to fill the answers fast</summary>
+        <p class="hint">One answer per line with its vote count, like “Wire nuts 32” or “Electrical tape, 24”. Only the top 8 are used.</p>
+        <textarea id="bulk" rows="6" placeholder="Wire nuts 32&#10;Electrical tape 24&#10;Ladder 15"></textarea>
+        <button class="btn" id="bulkGo">Fill answers from paste</button>
+      </details>
+      <button class="btn" id="delQ">Delete this question</button>
+      <hr class="sep">
+      <h3 class="h3">Teams</h3>
+      <div class="teamsrow">
+        <div class="field"><label for="tn0">Team 1 name</label><input id="tn0" type="text"></div>
+        <div class="field"><label for="tn1">Team 2 name</label><input id="tn1" type="text"></div>
+      </div>
+      <button class="btn" id="zero">Reset both scores to 0</button>
+      <hr class="sep">
+      <h3 class="h3">Backup</h3>
+      <p class="hint">Everything is saved in this browser. To move your questions and answers to the laptop you’ll use at the party, export a backup here and import it there.</p>
+      <div class="row">
+        <button class="btn" id="exportBtn">Export backup</button>
+        <button class="btn" id="importBtn">Import backup</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+    </section>
+  </div>
+  <div class="edfoot">
+    <button class="btn" id="restore">Restore starter questions</button>
+    <button class="btn red" id="closeEd2">Done</button>
+  </div>
+</dialog>
+
+<!-- Fast Money -->
+<dialog id="fm" aria-labelledby="fmTitle">
+  <div class="dlg-head">
+    <h2 id="fmTitle">⚡ Fast Money</h2>
+    <button class="btn" id="closeFm">Close</button>
+  </div>
+  <div class="dlg-body">
+    <p class="hint">Two players try to reach 200 points together. Pick 5 questions, start the timer, and choose the answer each player gives. Answers that aren’t on the board score zero.</p>
+    <div class="fm-top">
+      <div class="seg" id="fmPlayers">
+        <button data-p="0" class="on">Player 1 · 20 sec</button>
+        <button data-p="1">Player 2 · 25 sec</button>
+      </div>
+      <div class="timer" id="timer" aria-live="off">20</div>
+      <button class="btn green" id="tStart">Start timer</button>
+      <button class="btn" id="tReset">Reset</button>
+      <button class="btn" id="fmAuto">Pick 5 questions for me</button>
+    </div>
+    <div class="fm-rows" id="fmRows"></div>
+    <div class="fm-total">
+      <div class="fm-nums">
+        <span>Player 1: <b id="fmP1">0</b></span>
+        <span>Player 2: <b id="fmP2">0</b></span>
+        <span class="fm-big">Total <b id="fmTotal">0</b> / 200</span>
+      </div>
+      <div class="fm-bar"><div id="fmBar"></div></div>
+      <p class="fm-msg" id="fmMsg"></p>
+    </div>
+  </div>
+</dialog>
+
+<!-- Winner -->
+<dialog id="win" aria-labelledby="winTitle">
+  <div class="win-body">
+    <div class="win-emoji" aria-hidden="true">🎄🏆🎁</div>
+    <h2 id="winTitle"></h2>
+    <p class="win-scores" id="winScores"></p>
+    <p class="hint" id="winNote"></p>
+    <div class="row center">
+      <button class="btn" id="winClose">Back to the board</button>
+      <button class="btn red" id="winNew">Start a new game</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
