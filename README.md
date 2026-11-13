@@ -29,5 +29,8 @@ A bright, Christmas-themed Family Feud game board for the company party. Static 
 - Award the round to a team, then Next question. Double and Triple points are in the Play card.
 - **Fast Money** is in the top bar: two players, 20 and 25 second timers, 200-point goal.
 - **Finish game** shows the winner.
+- **Music:** Christmas carols (Jingle Bells, We Wish You a Merry Christmas, Deck the Halls, Silent Night) play softly after you press Start, shuffled on a loop. Use the Music button and Volume slider in the top bar. The Sound button mutes everything, and the music dips under the buzzer and fanfare.
+- **Your own sound effects:** drop `correct.mp3` (plays on each right answer) and/or `strike.mp3` (plays on each strike) into the repo root and the game uses them in place of the built-in sounds. Use only files you have the rights to play. The built-in sounds are original game-show-style effects, not the official show audio.
+- **Your own music:** drop a licensed or royalty-free `music.mp3` into the repo root (next to index.html) and the game plays it on a loop instead of the built-in carols. Only use tracks you have the rights to play.
 
 Shortcuts: 1–8 reveal, X strike, ← → change question, F full screen, M sound.

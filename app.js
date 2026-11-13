@@ -68,6 +68,8 @@
       teams: [{ name: 'Team Red', score: 0 }, { name: 'Team Green', score: 0 }],
       cur: 0,
       mute: false,
+      music: true,
+      musicVol: 50,
       questions: BANK.map(function (b, i) {
         return {
           id: 'q' + (i + 1), cat: CATS[b[0]], q: b[1], use: !!b[2],
@@ -91,6 +93,8 @@
       }),
       cur: Math.max(0, +d.cur || 0),
       mute: !!d.mute,
+      music: d.music !== false,
+      musicVol: isFinite(+d.musicVol) && d.musicVol !== null && d.musicVol !== '' ? Math.min(100, Math.max(0, +d.musicVol)) : 50,
       questions: [],
       fm: blankFm()
     };
@@ -168,9 +172,29 @@
     o.start(c.currentTime + start); o.stop(c.currentTime + start + dur + 0.05);
   }
   var PENT = [784, 880, 988, 1175, 1319, 1568, 1760, 1976];
-  function ding(n) { var f = PENT[Math.min(n, 7)]; tone(f, 0, 0.35, 'sine', 0.22); tone(f * 1.5, 0.1, 0.45, 'sine', 0.14); }
-  function buzz() { tone(120, 0, 0.7, 'sawtooth', 0.16); tone(126, 0, 0.7, 'square', 0.07); }
-  function fanfare() { [523, 659, 784, 1047, 1319].forEach(function (f, i) { tone(f, i * 0.09, 0.35, 'triangle', 0.18); }); }
+  // Optional: put correct.mp3 and strike.mp3 in the repo root to replace the built-in synth sounds.
+  var sfx = { correct: null, strike: null };
+  function playFile(name) {
+    var a = sfx[name];
+    if (!a) return false;
+    if (!S.mute) { try { a.currentTime = 0; var p = a.play(); if (p && p.catch) p.catch(function () {}); } catch (e) { /* ignore */ } }
+    return true;
+  }
+  // Bright bell "ding-ding" that climbs a step for each answer revealed
+  function ding(n) {
+    if (playFile('correct')) return;
+    var f = PENT[Math.min(n, 7)];
+    tone(f, 0, 0.7, 'sine', 0.22); tone(f * 2.005, 0, 0.4, 'sine', 0.1); tone(f * 3, 0, 0.2, 'sine', 0.05);
+    tone(f * 1.5, 0.09, 0.6, 'sine', 0.15); tone(f * 3.01, 0.09, 0.3, 'sine', 0.05);
+  }
+  // Low, harsh game-show buzzer with a thump on the front
+  function buzz() {
+    duck(1000);
+    if (playFile('strike')) return;
+    tone(70, 0, 0.18, 'sine', 0.3);
+    tone(110, 0, 0.9, 'sawtooth', 0.2); tone(114, 0, 0.9, 'square', 0.1); tone(220, 0, 0.5, 'sawtooth', 0.06);
+  }
+  function fanfare() { duck(1500); [523, 659, 784, 1047, 1319].forEach(function (f, i) { tone(f, i * 0.09, 0.35, 'triangle', 0.18); }); }
   function tick() { tone(1000, 0, 0.05, 'square', 0.06); }
   function jingle() {
     [[659, 0], [659, 0.2], [659, 0.4, 0.35], [659, 0.85], [659, 1.05], [659, 1.25, 0.35],
@@ -178,6 +202,116 @@
       tone(n[0], n[1], n[2] || 0.18, 'triangle', 0.16);
     });
   }
+
+
+  /* ---------------- Background music ---------------- */
+  // Public-domain carols, played by a simple music-box synth. Add a licensed music.mp3 to the repo root to use a real recording instead.
+  var NOTE_BASE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+  function hz(n) {
+    var m = /^([A-G])(#|b)?(\d)$/.exec(n);
+    if (!m) return 0;
+    var midi = 12 * (+m[3] + 1) + NOTE_BASE[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
+    return 440 * Math.pow(2, (midi - 69) / 12);
+  }
+  var SONGS = [
+    { name: 'Jingle Bells', bpm: 132, notes: 'E5:1 E5:1 E5:2 E5:1 E5:1 E5:2 E5:1 G5:1 C5:1.5 D5:.5 E5:4 F5:1 F5:1 F5:1.5 F5:.5 F5:1 E5:1 E5:1 E5:.5 E5:.5 E5:1 D5:1 D5:1 E5:1 D5:2 G5:2 R:2' },
+    { name: 'We Wish You a Merry Christmas', bpm: 150, notes: 'D5:1 G5:1 G5:.5 A5:.5 G5:.5 F#5:.5 E5:1 E5:1 E5:1 A5:1 A5:.5 B5:.5 A5:.5 G5:.5 F#5:1 D5:1 D5:1 B5:1 B5:.5 C6:.5 B5:.5 A5:.5 G5:1 E5:1 D5:.5 D5:.5 E5:1 A5:1 F#5:1 G5:3 R:2' },
+    { name: 'Deck the Halls', bpm: 128, notes: 'G5:1.5 F#5:.5 E5:1 D5:1 C5:1 D5:1 E5:1 C5:1 D5:.5 E5:.5 F#5:.5 D5:.5 E5:1.5 D5:.5 C5:1 B4:1 C5:2 R:2' },
+    { name: 'Silent Night', bpm: 96, notes: 'G5:1.5 A5:.5 G5:1 E5:3 G5:1.5 A5:.5 G5:1 E5:3 D6:2 D6:1 B5:3 C6:2 C6:1 G5:3 A5:2 A5:1 C6:1.5 B5:.5 A5:1 G5:1.5 A5:.5 G5:1 E5:3 A5:2 A5:1 C6:1.5 B5:.5 A5:1 G5:1.5 A5:.5 G5:1 E5:3 D6:2 D6:1 F6:1.5 D6:.5 B5:1 C6:3 E6:3 C6:1 G5:1 E5:1 G5:1.5 F5:.5 D5:1 C5:3 R:3' }
+  ];
+  SONGS.forEach(function (s) {
+    s.seq = s.notes.split(/\s+/).map(function (p) {
+      var x = p.split(':');
+      return [x[0] === 'R' ? 0 : hz(x[0]), parseFloat(x[1])];
+    });
+  });
+
+  var music = { on: false, gain: null, timer: null, t: 0, song: null, ni: 0, order: [], oi: 0, audio: null, fileMode: false, last: -1 };
+  var userStarted = false, introStart = false;
+
+  function musicLevel() { return Math.pow(S.musicVol / 100, 2) * 0.5; }
+  function fileLevel() { return Math.pow(S.musicVol / 100, 2) * 0.7; }
+  function musicNode() {
+    var c = ctx(); if (!c) return null;
+    if (!music.gain) { music.gain = c.createGain(); music.gain.gain.value = musicLevel(); music.gain.connect(c.destination); }
+    return music.gain;
+  }
+  function pluck(f, when) {
+    [[f, 'sine', 0.5, 1.6], [f * 2, 'triangle', 0.14, 0.6], [f * 4, 'sine', 0.05, 0.3]].forEach(function (p) {
+      var o = ac.createOscillator(), g = ac.createGain();
+      o.type = p[1]; o.frequency.value = p[0];
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.linearRampToValueAtTime(p[2], when + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + p[3]);
+      o.connect(g); g.connect(music.gain);
+      o.start(when); o.stop(when + p[3] + 0.05);
+    });
+  }
+  function nextSong() {
+    if (music.oi >= music.order.length) {
+      var o = SONGS.map(function (_, i) { return i; });
+      for (var i = o.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = o[i]; o[i] = o[j]; o[j] = t; }
+      if (o[0] === music.last && o.length > 1) { var s = o[0]; o[0] = o[1]; o[1] = s; }
+      music.order = o; music.oi = 0;
+    }
+    music.last = music.order[music.oi++];
+    music.song = SONGS[music.last]; music.ni = 0;
+    renderMusic();
+  }
+  function schedule() {
+    if (!music.on || !ac) return;
+    while (music.t < ac.currentTime + 0.4) {
+      if (!music.song || music.ni >= music.song.seq.length) nextSong();
+      var n = music.song.seq[music.ni++], beat = 60 / music.song.bpm;
+      if (music.t < ac.currentTime) music.t = ac.currentTime + 0.05;
+      if (n[0]) pluck(n[0], music.t);
+      music.t += n[1] * beat;
+    }
+  }
+  function startSynth() {
+    if (music.on) return;
+    var c = ctx(); if (!c || !musicNode()) return;
+    music.on = true; music.song = null; music.t = c.currentTime + 0.2;
+    schedule(); music.timer = setInterval(schedule, 120);
+  }
+  function stopSynth() { if (music.timer) clearInterval(music.timer); music.timer = null; music.on = false; music.song = null; }
+  function startFile() {
+    if (!music.audio) { music.audio = new Audio('music.mp3'); music.audio.loop = true; }
+    music.audio.volume = fileLevel();
+    var p = music.audio.play(); if (p && p.catch) p.catch(function () {});
+  }
+  function stopFile() { if (music.audio) music.audio.pause(); }
+  function syncMusic() {
+    var want = userStarted && S.music && !S.mute && !document.hidden;
+    if (!want) { stopSynth(); stopFile(); }
+    else if (music.fileMode) { stopSynth(); startFile(); }
+    else { stopFile(); startSynth(); }
+    renderMusic();
+  }
+  function setVolume() {
+    if (music.gain && ac) music.gain.gain.setTargetAtTime(musicLevel(), ac.currentTime, 0.05);
+    if (music.audio) music.audio.volume = fileLevel();
+  }
+  function duck(ms) {
+    if (music.gain && ac && music.on) {
+      var g = music.gain.gain, t = ac.currentTime;
+      g.cancelScheduledValues(t);
+      g.setTargetAtTime(musicLevel() * 0.25, t, 0.05);
+      g.setTargetAtTime(musicLevel(), t + ms / 1000, 0.25);
+    }
+    if (music.audio && !music.audio.paused) {
+      music.audio.volume = fileLevel() * 0.25;
+      setTimeout(function () { if (music.audio) music.audio.volume = fileLevel(); }, ms);
+    }
+  }
+  function renderMusic() {
+    var b = $('music'), playing = music.on || (music.audio && !music.audio.paused);
+    var label = !S.music ? '🎵 Music off' : S.mute ? '🎵 Music muted' : (playing && music.song && !music.fileMode) ? '🎵 ' + music.song.name : '🎵 Music on';
+    b.textContent = label;
+    b.setAttribute('aria-pressed', S.music ? 'true' : 'false');
+    $('vol').value = S.musicVol;
+  }
+  function toggleMusic() { S.music = !S.music; save(); userStarted = true; ctx(); syncMusic(); }
 
   /* ---------------- Little effects ---------------- */
   var toastT;
@@ -441,7 +575,7 @@
     $('mute').textContent = S.mute ? '🔇 Sound off' : '🔊 Sound on';
     $('mute').setAttribute('aria-pressed', S.mute ? 'true' : 'false');
   }
-  function toggleMute() { S.mute = !S.mute; save(); renderMute(); if (!S.mute) ding(1); }
+  function toggleMute() { S.mute = !S.mute; save(); renderMute(); syncMusic(); if (!S.mute) ding(1); }
 
   /* ---------------- Question editor ---------------- */
   var edI = 0;
@@ -632,6 +766,9 @@
   $('finish').onclick = finish;
   $('fs').onclick = toggleFs;
   $('mute').onclick = toggleMute;
+  $('music').onclick = toggleMusic;
+  $('vol').oninput = function () { S.musicVol = +$('vol').value; save(); setVolume(); };
+  document.addEventListener('visibilitychange', syncMusic);
   document.querySelectorAll('[data-adj]').forEach(function (b) {
     b.onclick = function () {
       var p = b.dataset.adj.split(',').map(Number);
@@ -742,11 +879,41 @@
     setTimeout(function () { i.hidden = true; }, 520);
     try { sessionStorage.setItem('feud-intro-seen', '1'); } catch (e) { /* ignore */ }
   }
-  $('introGo').onclick = function () { ctx(); jingle(); closeIntro(); lightsParty(); };
-  $('introSetup').onclick = function () { ctx(); closeIntro(); openEditor(); };
+  $('introGo').onclick = function () {
+    ctx(); jingle(); closeIntro(); lightsParty();
+    introStart = true;
+    setTimeout(function () { userStarted = true; syncMusic(); }, 3000); // let the jingle finish first
+  };
+  $('introSetup').onclick = function () { ctx(); closeIntro(); openEditor(); userStarted = true; introStart = true; syncMusic(); };
   try { if (sessionStorage.getItem('feud-intro-seen')) $('intro').hidden = true; } catch (e) { /* ignore */ }
 
+  // If the welcome screen was skipped (page reload), start music on the first click or key press.
+  ['pointerdown', 'keydown'].forEach(function (ev) {
+    document.addEventListener(ev, function once() {
+      if (!$('intro').hidden || introStart) return;
+      document.removeEventListener(ev, once);
+      if (!userStarted) { userStarted = true; ctx(); syncMusic(); }
+    });
+  });
+  // Use your own sound effects if the repo has correct.mp3 / strike.mp3 next to index.html
+  if (window.fetch) {
+    ['correct', 'strike'].forEach(function (name) {
+      fetch(name + '.mp3', { method: 'HEAD' }).then(function (r) {
+        var ct = r.headers.get('content-type') || '';
+        if (r.ok && /audio|mpeg|octet-stream/i.test(ct)) { sfx[name] = new Audio(name + '.mp3'); sfx[name].preload = 'auto'; }
+      }).catch(function () {});
+    });
+  }
+  // Use a real recording if the repo has a music.mp3 next to index.html
+  if (window.fetch) {
+    fetch('music.mp3', { method: 'HEAD' }).then(function (r) {
+      var ct = r.headers.get('content-type') || '';
+      if (r.ok && /audio|mpeg|octet-stream/i.test(ct)) { music.fileMode = true; syncMusic(); }
+    }).catch(function () {});
+  }
+
   renderMute();
+  renderMusic();
   renderAll();
   if (!$('intro').hidden) $('introGo').focus();
 })();
