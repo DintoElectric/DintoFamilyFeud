@@ -56,7 +56,9 @@ h1{
   text-shadow:0 3px 0 #fff,0 7px 14px rgba(200,16,46,.22);
 }
 .sub{margin:0 0 10px;font-weight:600;color:var(--green);font-size:clamp(15px,1.8vw,20px)}
-.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.vol{display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px;color:var(--muted)}
+.vol input{width:90px;accent-color:var(--red)}
 
 /* ---------- Buttons ---------- */
 .btn{

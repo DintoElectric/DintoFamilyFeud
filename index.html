@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
 
@@ -84,6 +84,8 @@
         <button class="btn" id="openFm">⚡ Fast Money</button>
         <button class="btn" id="fs">⛶ Full screen</button>
         <button class="btn" id="mute" aria-pressed="false">🔊 Sound on</button>
+        <button class="btn" id="music" aria-pressed="true">🎵 Music on</button>
+        <label class="vol">Volume <input type="range" id="vol" min="0" max="100" step="5" aria-label="Music volume"></label>
       </div>
     </div>
 
@@ -371,6 +373,6 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="app.js"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

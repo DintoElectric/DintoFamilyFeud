@@ -48,7 +48,27 @@
   // Sample answers on question 1 so the board looks alive before the survey is tallied.
   var SAMPLE = [['Wire nuts', 32], ['Electrical tape', 24], ['Ladder', 15], ['Coffee', 10], ['Wire strippers', 8], ['Meter', 6]];
 
-  var $ = function (id) { return document.getElementById(id); };
+  // Tolerate mismatched file versions: a missing element becomes a harmless stand-in instead of crashing the game.
+  var missing = [];
+  function stub() {
+    return new Proxy(function () {}, {
+      get: function (t, k) {
+        if (k === 'classList') return { add: function () {}, remove: function () {}, toggle: function () {}, contains: function () { return false; } };
+        if (k === 'style') return { setProperty: function () {} };
+        if (k === 'children') return [];
+        if (k === 'value' || k === 'textContent') return '';
+        if (k === 'checked' || k === 'disabled' || k === 'hidden') return false;
+        return function () { return stub(); };
+      },
+      set: function () { return true; }
+    });
+  }
+  var $ = function (id) {
+    var e = document.getElementById(id);
+    if (e) return e;
+    if (missing.indexOf(id) < 0) missing.push(id);
+    return stub();
+  };
   function el(tag, cls, txt) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -915,5 +935,10 @@
   renderMute();
   renderMusic();
   renderAll();
+  if (missing.length) {
+    var warn = el('div', 'status warn', 'Some game files are out of date (missing: ' + missing.join(', ') + '). Upload index.html, styles.css and app.js together, then refresh the page.');
+    warn.style.cssText = 'position:relative;z-index:70;margin:8px;text-align:center';
+    document.body.insertBefore(warn, document.body.firstChild);
+  }
   if (!$('intro').hidden) $('introGo').focus();
 })();
