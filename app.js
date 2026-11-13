@@ -5,45 +5,24 @@
   var KEY = 'holiday-feud-v2';
   var CATS = ['Job site and trade life', 'Office life', 'Holiday themed', 'Just for fun'];
 
-  // [category index, question, in the survey/game by default (1 = yes)]
+  // The 12 questions from the original Holiday Family Feud artifact (same 12 as the staff survey).
+  // Ids stay stable so saved answers keep matching.
   var BANK = [
-    [0, 'Name something an electrician always has in their truck.', 1],
-    [0, 'Name the most annoying thing a GC or another trade does on a job site.', 1],
-    [0, 'Name an excuse for showing up late to the job.', 1],
-    [0, 'Name something you’d find in a foreman’s pocket.', 0],
-    [0, 'Name the worst place on a job site to run conduit or pull wire.', 0],
-    [0, 'Name a tool that always seems to go missing.', 1],
-    [0, 'Name something that gets said on every jobsite walk.', 0],
-    [0, 'Name the first thing you do when you get to the job in the morning.', 0],
-    [0, 'Name something that always goes wrong on a Monday.', 0],
-    [0, 'Name something you’d find in the bottom of a tool bag.', 0],
-    [0, 'Name a reason a job gets delayed.', 0],
-    [0, 'Name a snack or drink you’d find on a job site.', 0],
-    [0, 'Name something an inspector always seems to catch.', 0],
-    [1, 'Name something people complain about in the office.', 1],
-    [1, 'Name the most popular lunch spot or lunch order around here.', 1],
-    [1, 'Name a phrase you hear on the phone with customers or GCs.', 0],
-    [1, 'Name something that’s always running low in the office.', 1],
-    [1, 'Name a reason someone stops by the office unannounced.', 0],
-    [1, 'Name something that causes a traffic jam at the copier or printer.', 0],
-    [1, 'Name the most common reason someone calls the office.', 0],
-    [1, 'Name something you’d find in the office fridge that’s been there too long.', 0],
-    [2, 'Name the worst Christmas gift you’ve ever received.', 1],
-    [2, 'Name something you’d find at a company Christmas party.', 1],
-    [2, 'Name a Christmas movie everyone has seen.', 1],
-    [2, 'Name something people do the day after Christmas.', 0],
-    [2, 'Name a holiday food you can’t stand.', 0],
-    [2, 'Name something Santa would need an electrician for.', 1],
-    [2, 'Name the first thing you’d do if you won the Christmas raffle.', 0],
-    [2, 'Name a holiday decoration that uses a lot of electricity.', 0],
-    [2, 'Name something that always goes wrong with Christmas lights.', 0],
-    [2, 'Name a Christmas song you’re sick of hearing.', 0],
-    [2, 'Name something people hide from their family over the holidays (like gifts, or how much they spent).', 0],
-    [3, 'Name something you’d do with a surprise day off.', 1],
-    [3, 'Name a reason you’d call in “sick.”', 0],
-    [3, 'Name something you’d never say to your boss.', 0],
-    [3, 'Name a job you’d want if you weren’t in the electrical trade.', 0]
+    ['q1', 0, 'Name something an electrician always has in their truck.'],
+    ['q2', 0, 'Name the most annoying thing a GC or another trade does on a job site.'],
+    ['q3', 0, 'Name an excuse for showing up late to the job.'],
+    ['q6', 0, 'Name a tool that always seems to go missing.'],
+    ['q14', 1, 'Name something people complain about in the office.'],
+    ['q15', 1, 'Name the most popular lunch spot or lunch order around here.'],
+    ['q17', 1, 'Name something that’s always running low in the office.'],
+    ['q22', 2, 'Name the worst Christmas gift you’ve ever received.'],
+    ['q23', 2, 'Name something you’d find at a company Christmas party.'],
+    ['q24', 2, 'Name a Christmas movie everyone has seen.'],
+    ['q27', 2, 'Name something Santa would need an electrician for.'],
+    ['q33', 3, 'Name something you’d do with a surprise day off.']
   ];
+  var KEEP = {};
+  BANK.forEach(function (b) { KEEP[b[0]] = true; });
 
   // Sample answers on question 1 so the board looks alive before the survey is tallied.
   var SAMPLE = [['Wire nuts', 32], ['Electrical tape', 24], ['Ladder', 15], ['Coffee', 10], ['Wire strippers', 8], ['Meter', 6]];
@@ -84,7 +63,7 @@
   }
   function fresh() {
     return {
-      v: 2,
+      v: 3,
       teams: [{ name: 'Team Red', score: 0 }, { name: 'Team Green', score: 0 }],
       cur: 0,
       mute: false,
@@ -92,7 +71,7 @@
       musicVol: 50,
       questions: BANK.map(function (b, i) {
         return {
-          id: 'q' + (i + 1), cat: CATS[b[0]], q: b[1], use: !!b[2],
+          id: b[0], cat: CATS[b[1]], q: b[2], use: true,
           a: i === 0 ? SAMPLE.map(function (r) { return { t: r[0], p: r[1] }; }) : []
         };
       }),
@@ -103,7 +82,7 @@
     if (!d || !Array.isArray(d.questions) || !d.questions.length) return null;
     var f = fresh();
     var out = {
-      v: 2,
+      v: 3,
       teams: [0, 1].map(function (i) {
         var t = d.teams && d.teams[i];
         return {
@@ -134,6 +113,13 @@
         })
       });
     });
+    if ((+d.v || 0) < 3) {
+      // One-time cleanup: drop the extra starter questions, but keep any you already typed answers into.
+      var pruned = out.questions.filter(function (q) {
+        return KEEP[q.id] || !/^q\d+$/.test(q.id) || q.a.some(function (x) { return x.t && x.t.trim(); });
+      });
+      if (pruned.length) out.questions = pruned;
+    }
     if (!out.questions.length) return null;
     if (d.fm && Array.isArray(d.fm.q) && Array.isArray(d.fm.pick)) {
       out.fm.q = [0, 1, 2, 3, 4].map(function (i) { return d.fm.q[i] || null; });
