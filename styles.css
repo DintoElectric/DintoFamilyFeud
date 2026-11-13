@@ -272,6 +272,7 @@ hr.sep{border:none;border-top:2px dashed var(--line);margin:18px 0}
 
 /* ---------- Character animations (only when motion is allowed) ---------- */
 .eye-wink{opacity:0}
+.hat-logo-img{visibility:hidden}
 .bulb{fill:var(--c)}
 .halo{fill:var(--c);opacity:.4}
 .arm{transform-origin:116px 146px;transform:rotate(58deg)}

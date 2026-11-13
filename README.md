@@ -28,6 +28,7 @@ A bright, Christmas-themed Family Feud game board for the company party. Static 
 - After 3 strikes the other team can steal; the status bar tells you what to do.
 - Award the round to a team, then Next question. Double and Triple points are in the Play card.
 - **Fast Money** is in the top bar: two players, 20 and 25 second timers, 200-point goal.
+- **Hard hat logo:** the reindeer wears a hard hat with a text “DINTO” badge. To use the real logo, add `dinto-logo.png` (or `dinto-logo.svg`) to the repo root; it replaces the text automatically. A wide logo on a transparent or white background looks best.
 - **Finish game** shows the winner.
 - **Music:** Christmas carols (Jingle Bells, We Wish You a Merry Christmas, Deck the Halls, Silent Night) play softly after you press Start, shuffled on a loop. Use the Music button and Volume slider in the top bar. The Sound button mutes everything, and the music dips under the buzzer and fanfare.
 - **Your own sound effects:** drop `correct.mp3` (plays on each right answer) and/or `strike.mp3` (plays on each strike) into the repo root and the game uses them in place of the built-in sounds. Use only files you have the rights to play. The built-in sounds are original game-show-style effects, not the official show audio.

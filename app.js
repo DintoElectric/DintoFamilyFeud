@@ -879,6 +879,19 @@
   snow($('introSnow'), 60);
   buildLights();
 
+  // If dinto-logo.png (or .svg) is in the repo root, show the real logo on the hard hat instead of the text.
+  function tryLogo(urls) {
+    if (!urls.length || !window.Image) return;
+    var img = new Image();
+    img.onload = function () {
+      document.querySelectorAll('.hat-logo-img').forEach(function (e) { e.setAttribute('href', urls[0]); e.style.visibility = 'visible'; });
+      document.querySelectorAll('.hat-logo-text').forEach(function (e) { e.style.display = 'none'; });
+    };
+    img.onerror = function () { tryLogo(urls.slice(1)); };
+    img.src = urls[0];
+  }
+  tryLogo(['dinto-logo.png', 'dinto-logo.svg']);
+
   function closeIntro() {
     var i = $('intro');
     i.classList.add('out');
