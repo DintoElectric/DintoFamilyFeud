@@ -17,7 +17,7 @@ A bright, Christmas-themed Family Feud game board for the company party. Static 
 
 ## Before the party
 
-1. Open **Set up questions**. The game uses the 12 questions from the original artifact (the same 12 as the staff survey). You can untick any, or add your own.
+1. Open **Set up questions**. The game uses 11 questions, listed in play order. You can untick any, edit them, or add your own.
 2. Tally the survey, then for each question open it and either type the answers and vote counts or use **Paste survey results**.
 3. Question 1 has sample answers so the board looks alive. Replace them with the real results.
 4. Your questions, answers, and scores are saved in the browser you use. To move them to the party laptop, use **Export backup** here and **Import backup** there.

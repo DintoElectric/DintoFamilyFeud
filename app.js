@@ -5,21 +5,19 @@
   var KEY = 'holiday-feud-v2';
   var CATS = ['Job site and trade life', 'Office life', 'Holiday themed', 'Just for fun'];
 
-  // The 12 questions from the original Holiday Family Feud artifact (same 12 as the staff survey).
-  // Ids stay stable so saved answers keep matching.
+  // The game's questions, in play order. Ids stay stable so typed answers keep matching.
   var BANK = [
     ['q1', 0, 'Name something an electrician always has in their truck.'],
     ['q2', 0, 'Name the most annoying thing a GC or another trade does on a job site.'],
-    ['q3', 0, 'Name an excuse for showing up late to the job.'],
-    ['q6', 0, 'Name a tool that always seems to go missing.'],
+    ['q7', 0, 'Name something that gets said on every jobsite walk.'],
+    ['q31', 2, 'Name a Christmas song you’re sick of hearing.'],
     ['q14', 1, 'Name something people complain about in the office.'],
-    ['q15', 1, 'Name the most popular lunch spot or lunch order around here.'],
-    ['q17', 1, 'Name something that’s always running low in the office.'],
+    ['q33', 3, 'Name something you’d do with a surprise day off.'],
+    ['q36', 3, 'Name a job you’d want if you weren’t in the electrical trade.'],
     ['q22', 2, 'Name the worst Christmas gift you’ve ever received.'],
-    ['q23', 2, 'Name something you’d find at a company Christmas party.'],
-    ['q24', 2, 'Name a Christmas movie everyone has seen.'],
+    ['q26', 2, 'Name a holiday food you can’t stand.'],
     ['q27', 2, 'Name something Santa would need an electrician for.'],
-    ['q33', 3, 'Name something you’d do with a surprise day off.']
+    ['q25', 2, 'Name something people do the day after Christmas.']
   ];
   var KEEP = {};
   BANK.forEach(function (b) { KEEP[b[0]] = true; });
@@ -63,7 +61,7 @@
   }
   function fresh() {
     return {
-      v: 3,
+      v: 4,
       teams: [{ name: 'Team Red', score: 0 }, { name: 'Team Green', score: 0 }],
       cur: 0,
       mute: false,
@@ -82,7 +80,7 @@
     if (!d || !Array.isArray(d.questions) || !d.questions.length) return null;
     var f = fresh();
     var out = {
-      v: 3,
+      v: 4,
       teams: [0, 1].map(function (i) {
         var t = d.teams && d.teams[i];
         return {
@@ -113,12 +111,24 @@
         })
       });
     });
-    if ((+d.v || 0) < 3) {
-      // One-time cleanup: drop the extra starter questions, but keep any you already typed answers into.
-      var pruned = out.questions.filter(function (q) {
-        return KEEP[q.id] || !/^q\d+$/.test(q.id) || q.a.some(function (x) { return x.t && x.t.trim(); });
+    if ((+d.v || 0) < 4) {
+      // One-time switch to the current question list. Typed answers, your own custom questions and scores are kept.
+      var old = {};
+      out.questions.forEach(function (q) { old[q.id] = q; });
+      var next = BANK.map(function (b) {
+        var o = old[b[0]];
+        return { id: b[0], cat: CATS[b[1]], q: b[2], use: true, a: o ? o.a : [] };
       });
-      if (pruned.length) out.questions = pruned;
+      var inNext = {};
+      next.forEach(function (q) { inNext[q.id] = true; });
+      out.questions.forEach(function (q) {
+        if (inNext[q.id]) return;
+        var custom = !/^q\d+$/.test(q.id);
+        var typed = q.a.some(function (x) { return x.t && x.t.trim(); });
+        if (custom) next.push(q);
+        else if (typed) { q.use = false; next.push(q); }   // old starter question you already typed answers into: kept, but out of the game
+      });
+      out.questions = next;
     }
     if (!out.questions.length) return null;
     if (d.fm && Array.isArray(d.fm.q) && Array.isArray(d.fm.pick)) {
@@ -588,24 +598,20 @@
   function renderList() {
     var ul = $('qlist'); ul.innerHTML = '';
     var cats = [];
-    S.questions.forEach(function (q) { if (cats.indexOf(q.cat) < 0) cats.push(q.cat); });
-    cats.forEach(function (c) {
-      ul.appendChild(el('li', 'grp', c));
-      S.questions.forEach(function (q, i) {
-        if (q.cat !== c) return;
-        var li = el('li', 'qrow');
-        var cb = document.createElement('input');
-        cb.type = 'checkbox'; cb.checked = q.use;
-        cb.setAttribute('aria-label', 'Use question ' + (i + 1) + ' in the game');
-        cb.onchange = function () { q.use = cb.checked; save(); updateCount(); if (i === edI) $('edUse').checked = q.use; };
-        var b = el('button', i === edI ? 'cur' : '');
-        b.type = 'button';
-        b.textContent = (i + 1) + '. ' + (q.q || 'Untitled question');
-        var n = q.a.filter(function (x) { return x.t && x.t.trim(); }).length;
-        b.appendChild(el('span', 'cnt', n ? n + ' answers' : 'No answers yet'));
-        b.onclick = function () { edI = i; renderEditor(); };
-        li.appendChild(cb); li.appendChild(b); ul.appendChild(li);
-      });
+    S.questions.forEach(function (q, i) {
+      if (cats.indexOf(q.cat) < 0) cats.push(q.cat);
+      var li = el('li', 'qrow');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox'; cb.checked = q.use;
+      cb.setAttribute('aria-label', 'Use question ' + (i + 1) + ' in the game');
+      cb.onchange = function () { q.use = cb.checked; save(); updateCount(); if (i === edI) $('edUse').checked = q.use; };
+      var b = el('button', i === edI ? 'cur' : '');
+      b.type = 'button';
+      b.textContent = (i + 1) + '. ' + (q.q || 'Untitled question');
+      var n = q.a.filter(function (x) { return x.t && x.t.trim(); }).length;
+      b.appendChild(el('span', 'cnt', n ? n + ' answers' : 'No answers yet'));
+      b.onclick = function () { edI = i; renderEditor(); };
+      li.appendChild(cb); li.appendChild(b); ul.appendChild(li);
     });
     var dl = $('cats'); dl.innerHTML = '';
     CATS.concat(cats.filter(function (c) { return CATS.indexOf(c) < 0; })).forEach(function (c) { dl.appendChild(new Option(c)); });
